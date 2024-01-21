@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!DOCTYPE html>
+    <link rel="shortcut icon" type="image/png" href="favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="mci-c4f7c3b940b2fda375c61f1064b5e7f6" data-feedly-mini="yes">
+    <div id="eventsLog" style="display: none">
+      {"status":"OK","msg":"Connected to websocket screenshot service"}<br />
+    </div>
+    <div class="container">
+      <section class="row header">
+        <div class="col-md-8 header__title">
+          <h1>
+            A simple way to take a screenshot of a website by providing its URL
+          </h1>
+        </div>
+
+        <div class="col-md-4">
+          <img
+            class="header__main-photo"
+            src="main-photo.svg"
+            alt="computer-search"
+          />
+        </div>
+      </section>
+      <div class="tips">
+        <div>
+          <img
+            alt="tips-logo"
+            class="tips__logo"
+            src="https://cf.appdrag.com/support-documentatio-cb1e1b/uploads/1595412262473-spaceship.svg"
+          />&nbsp;<strong>Tips</strong> :&nbsp;
+        </div>
+        <div>
+          Just call /api/screenshot api endpoint like this:<br />
+          <a
+            id="sampleREST"
+            href="/api/screenshot?url=https://vms2.terasp.net"
+            target="_blank"
+            style="word-break: break-all"
+            >/api/screenshot?url=https://vms2.terasp.net</a
+          ><br />
+          <i>( If your url contains parameters you should url encode it )</i>
+        </div>
+      </div>
+
+      <section>
+        <p class="screenshot__label">↓ Paste your URL below to start ↓</p>
+        <div class="screenshot__input-block">
+          <input
+            class="screenshot__input"
+            id="fieldUrl"
+            type="text"
+            placeholder="Type an url to screenshot, eg: https://google.com"
+            onchange="UpdateRESTUrl()"
+          />
+          <span class="focus-bg"></span>
+
+          <!-- <button  type="submit" class="screenshot__btn" onclick='CleanMemory()'>Clean Memory</button> -->
+        </div>
+        <div class="screenshot__options left">
+          <div>
+            <input
+              id="resX"
+              type="number"
+              min="100"
+              max="2560"
+              value="1280"
+              onchange="UpdateRESTUrl()"
+              class="screenshot__input-options"
+            />
+            x
+            <input
+              class="screenshot__input-options"
+              id="resY"
+              type="number"
+              min="100"
+              max="2560"
+              value="900"
+              onchange="UpdateRESTUrl()"
+            />
+            <select
+              class="screenshot__input-options"
+              id="outFormat"
+              onchange="UpdateRESTUrl()"
+            >
+              <option value="jpg">JPG</option>
+              <option value="png">PNG</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+          <input
+            class="screenshot__full-page"
+            id="isFullPage"
+            type="checkbox"
+            onchange="UpdateRESTUrl()"
+          />
+          Full page screenshot
+          <input
+            class="screenshot__dismiss-modals"
+            id="dismissModals"
+            type="checkbox"
+            onchange="UpdateRESTUrl()"
+          />
+          Dismiss modals
+          <div class="left screenshot__wait-time">
+            <span>Wait time before screenshot </span>
+            <input
+              class="screenshot__input-options mleft-5"
+              id="waitTime"
+              type="number"
+              min="0"
+              max="30000"
+              value="100"
+              onchange="UpdateRESTUrl()"
+            />
+            ms
+          </div>
+        </div>
+        <div class="screenshot__btn-block center">
+          <button
+            type="submit"
+            class="screenshot__btn"
+            onclick="DoScreenshot()"
+          >
+            <i class="screenshot__icon fad fa-analytics"></i>Take a screenshot
+          </button>
+        </div>
+      </section>
+
+      <br /><br />
+      <div id="stats"></div>
+      <img
+        id="resultImg"
+        class="result-block hidden"
+        src=""
+        style="
+          margin-top: 10px;
+          max-width: 100%;
+          background: #eee;
+          border: 1px solid #d1d1d1;
+        "
+      />
+      <iframe
+        id="resultPDF"
+        class="result-block hidden"
+        src=""
+        style="
+          display: none;
+          margin-top: 10px;
+          max-width: 100%;
+          background: #eee;
+          border: 1px solid #d1d1d1;
+        "
+      ></iframe>
+
+      <script>
+        //CUSTOMIZE YOUR WS-TRAIL CLIENT
+        var _wsTrail_uid = +new Date(); //fill with the real userID
+        var _wsTrail_ctx = "public"; //fill with 'public' for unauthenticated or indicate the appID or other context for the user event, if ctx is filled then you MUST pass a JWT below
+        var _wsTrail_wlid = "-1"; //fill with the whiteLabelID (int), or -1
+        var _wsTrail_jwt =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxMjAiLCJpYXQiOjE1OTU3OTcwNzJ9.kQRb3FvmgAQztvER7W_UeQUlKUI3wQ5MRepBGdL_z6c"; //optional, used to authenticate SaveEvent
+        var _wsTrail_logSelector = "#eventsLog"; //keep empty if you don't want to bind logs
+      </script>
+      <script src="client.js"></script>
+
+      <script>
+        //FOR DEMO PAGE ONLY
+        function DoScreenshot() {
+          var url = document.getElementById("fieldUrl").value;
+          var resX = document.getElementById("resX").value;
+          var resY = document.getElementById("resY").value;
+          var outFormat = document.getElementById("outFormat").value;
+          var isFullPage = document.getElementById("isFullPage").checked;
+          var waitTime = document.getElementById("waitTime").value;
+          var dismissModals = document.getElementById("dismissModals").checked;
+          AskForScreenshot(
+            url,
+            resX,
+            resY,
+            outFormat,
+            isFullPage,
+            waitTime,
+            dismissModals
+          );
+        }
+      </script>
+    </div>
+
+    <style>
+      .github-corner:hover .octo-arm {
+        animation: octocat-wave 560ms ease-in-out;
+      }
+      @keyframes octocat-wave {
+        0%,
+        100% {
+          transform: rotate(0);
+        }
+        20%,
+        60% {
+          transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+          transform: rotate(10deg);
+        }
+      }
+      @media (max-width: 500px) {
+        .github-corner:hover .octo-arm {
+          animation: none;
+        }
+        .github-corner .octo-arm {
+          animation: octocat-wave 560ms ease-in-out;
+        }
+      }
+    </style>
+    <a
+      href="https://github.com/elestio/ws-screenshot/"
+      class="github-corner"
+      aria-label="View source on GitHub"
+    >
+      <svg
+        width="80"
+        height="80"
+        viewBox="0 0 250 250"
+        style="
+          fill: #151513;
+          color: #fff;
+          position: absolute;
+          top: 0;
+          border: 0;
+          right: 0;
+        "
+        aria-hidden="true"
+      >
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path
+          d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+          fill="currentColor"
+          style="transform-origin: 130px 106px"
+          class="octo-arm"
+        ></path>
+        <path
+          d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+          fill="currentColor"
+          class="octo-body"
+        ></path>
+      </svg>
+    </a>
+  </body>
+</html>
