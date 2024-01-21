@@ -6,10 +6,15 @@ ports:
     targetIP: "172.17.0.1"
     public: true
     path: "/"
-    isAuth: false
+    isAuth: true
+    login: "root"
+    loginTitle: "ws-screenshot"
+    password: "random_password"
 environments:
   - key: "SOFTWARE_VERSION_TAG"
     value: "latest"
+  - key: "ADMIN_PASSWORD"
+    value: "random_password"
 config:
   runTime: "dockerCompose"
   version: ""
@@ -27,8 +32,3 @@ lifeCycleConfig:
   preRestoreCommand: "./scripts/preRestore.sh"
   postRestoreCommand: "./scripts/postRestore.sh"
   postDeployCommand: "./scripts/postDeploy.sh"
-webUI:
-  - url: "https://[CI_CD_DOMAIN]"
-    label: "ws-screenshot"
-    login: "root"
-    password: "[ADMIN_PASSWORD]"
