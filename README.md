@@ -51,21 +51,20 @@ You can check /public/js/client.js and /public/index.html for a sample on how to
 - waitTime: integer value in milliseconds, indicate max time to wait for page resources to load, default: 100
 - headers: add extra headers to the request
 
-# Protect with an ApiKey
+# cURL Command for Downloading an Image
 
-You can protect the REST & WS APIs with an ApiKey, this is usefull if you want to protect your screenshot server from being used by anyone To do that, open appconfig.json and set any string like a GUID in ApiKey attribute. This will be your ApiKey to pass to REST & WS APIs
+To download an image using cURL, you can use the following command:
 
-To call the REST API with an ApiKey:
+    curl -u root:[ADMIN_PASSWORD] -o <YOUR/PATH>/<YOUR_FILENAME>.<YOUR_OUTFORMAT> "https://[CI_CD_DOMAIN]/api/screenshot?<YOUR_PARAMETERS>&url=<YOUR_URL>"
 
-    https://[CI_CD_DOMAIN]/api/screenshot?url=https://example.com&apiKey=XXXXXXXXXXXXX
+For example:
 
-To call the Websocket API with an ApiKey:
+    curl -u root:[ADMIN_PASSWORD] -o /opt/app/google.jpg "https://[CI_CD_DOMAIN]/api/screenshot?resX=1280&resY=900&outFormat=jpg&isFullPage=false&url=https://www.google.com"
 
-    var event = {
-        cmd: "screenshot",
-        url: url,
-        originalTS: (+new Date()),
-        apiKey: "XXXXXXXXXXXXX"
-    };
+Explanation of the parameters:
 
-You can check /public/js/client.js for a sample on how to call the Websocket API
+- `-o <YOUR/PATH>/<YOUR_FILENAME>.<YOUR_OUTFORMAT>`: Specifies the output file path and filename along with the desired output format.
+
+- `"https://[CI_CD_DOMAIN]/api/screenshot?<YOUR_PARAMETERS>&url=<YOUR_URL>"`: Specifies the URL for the screenshot API along with any additional parameters you want to include (replace `<YOUR_PARAMETERS>` and `<YOUR_URL>` with your specific values).
+
+Feel free to adjust the command according to your needs and replace the placeholders with your actual information
